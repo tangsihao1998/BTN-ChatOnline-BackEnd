@@ -7,9 +7,10 @@ const cors = require('cors');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+
 // Define Routes Here -------------------------------------------
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const apiRoutes = require('./routes/api/v1')
+
 // Api Router
 // --------------------------------------------------------------
 
@@ -35,14 +36,13 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Passport
 app.use(passport.initialize());
-require('./routes/passport')(passport);
+require('./routes/api/v1/passport')(passport);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //------------------ Define a Route --------------------------
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/v1', apiRoutes);
 //------------------------------------------------------------
 
 // catch 404 and forward to error handler

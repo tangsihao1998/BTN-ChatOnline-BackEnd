@@ -5,7 +5,7 @@ const passport = require('passport');
 const router = express.Router();
 
 // Define Controller
-var UserController = require('../controller/ApiUserController');
+var UserController = require('../../../controller/ApiUserController');
 
 // User Router
 router.post('/register', async (req,res)=>{

@@ -9,15 +9,12 @@ var UserController = require('../../../controller/ApiUserController');
 
 // User Router
 router.post('/register', async (req,res)=>{
-    console.log('1')
     const {errors, isValid} = await UserController.validateRegisterInput(req.body);
-    console.log('2')
     if(!isValid) {
         return res.status(400).json({
             error: errors,
         });
     }
-    console.log('2')
     const CheckUser = await UserController.FindUserByEmail(req.body.email);
     if(CheckUser){
         return res.status(400).json({
@@ -28,6 +25,7 @@ router.post('/register', async (req,res)=>{
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
+        phone: req.body.phone,
     }
     const lastestPW = req.body.password;
     newuser.password = md5(req.body.password);

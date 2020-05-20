@@ -83,7 +83,7 @@ router.post('/login', async (req,res)=>{
     });
 });
 
-router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
     console.log("complete");
     return res.json({
         id: req.user.id,

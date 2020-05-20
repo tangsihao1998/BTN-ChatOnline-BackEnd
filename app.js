@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Mongoose connection -----------------------------------------------------------------------------------
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 
 var db=mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));

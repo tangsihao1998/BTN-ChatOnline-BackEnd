@@ -15,6 +15,18 @@ module.exports = function(app) {
 			password: {
 				type: String,
 			},
+			name: {
+				type: String,
+			},
+			image: {
+				type: String,
+			},
+			phone: {
+				type: String,
+			},
+			role: {
+				type: Number,
+			},
 		},
 		{
 			timestamps: true,

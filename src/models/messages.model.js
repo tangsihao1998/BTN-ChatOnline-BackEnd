@@ -1,39 +1,32 @@
-// users-model.js - A mongoose model
+// messages-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
 // for more of what you can do here.
 module.exports = function(app) {
-	const modelName = 'users';
+	const modelName = 'messages';
 	const mongooseClient = app.get('mongooseClient');
 	const { Schema } = mongooseClient;
 	const schema = new Schema(
 		{
-			email: {
+			content: {
 				type: String,
-				unique: true,
-				lowercase: true,
+				required: true,
 			},
-			password: {
+			type: {
 				type: String,
+				default: 'text',
+				required: true,
 			},
-			name: {
-				type: String,
+			sender: {
+				type: Schema.Types.ObjectId,
+				required: true,
+				ref: 'users',
 			},
-			image: {
-				type: String,
+			inRoom: {
+				type: Schema.Types.ObjectId,
+				required: true,
+				ref: 'rooms',
 			},
-			phone: {
-				type: String,
-			},
-			role: {
-				type: Number,
-			},
-			rooms: [
-				{
-					type: Schema.Types.ObjectId,
-					ref: 'rooms',
-				},
-			],
 		},
 		{
 			timestamps: true,

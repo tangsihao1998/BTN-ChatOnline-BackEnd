@@ -19,6 +19,8 @@ const authentication = require('./authentication');
 
 const mongoose = require('./mongoose');
 
+const swagger = require('./swagger');
+
 const app = express(feathers());
 
 // Load app configuration
@@ -38,6 +40,8 @@ app.configure(express.rest());
 app.configure(socketio());
 
 app.configure(mongoose);
+
+app.configure(swagger);
 
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);

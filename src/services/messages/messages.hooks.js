@@ -23,20 +23,20 @@ const appendSenderId = () => {
 
 const addMessageToRoom = () => {
 	return async (context) => {
-		// Get `app`, `method`, `params` and `result` from the hook context
-		const { app, result, params } = context;
+		// Get `app`, `params` and `result` from the hook context
+		const { app, params, result } = context;
 
 		// Get id of room in which message was posted
 		const roomId = result.inRoom;
 
-		// Push message to room
+		// Push message to messages array in room object
 		await app.service('rooms').patch(roomId, { $push: { messages: result._id } }, params);
 	};
 };
 
 const removeSensitiveData = () => {
 	return async (context) => {
-		const { result, method } = context;
+		const { method, result, id } = context;
 
 		const _removeSensitiveData = (message) => {
 			delete message.sender.password;
@@ -44,8 +44,11 @@ const removeSensitiveData = () => {
 		};
 
 		if (method === 'find') {
-			// Map all data to include the `user` information
+			// Remove sensitive data from result
 			context.result.data = result.data.map(_removeSensitiveData);
+		} else if (method === 'remove' && !id) {
+			// Remove sensitive data from result
+			context.result = result.map(_removeSensitiveData);
 		} else {
 			// Otherwise just update the single result
 			context.result = _removeSensitiveData(result);

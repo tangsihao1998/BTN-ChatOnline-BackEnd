@@ -12,9 +12,11 @@ module.exports = function(app) {
 				type: String,
 				unique: true,
 				lowercase: true,
+				required: true,
 			},
 			password: {
 				type: String,
+				required: true,
 			},
 			name: {
 				type: String,
@@ -26,7 +28,9 @@ module.exports = function(app) {
 				type: String,
 			},
 			role: {
-				type: Number,
+				type: String,
+				required: true,
+				default: 'User',
 			},
 			rooms: [
 				{

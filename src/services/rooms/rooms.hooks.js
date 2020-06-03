@@ -15,11 +15,24 @@ const addCurrentUserToMemberList = () => {
 		const { user } = context.params;
 
 		// Create an empty members array if not already provided
-		// then push current user's id into it.
+		//   then push current user's id into it.
 		if (!context.data.members) context.data.members = [];
-		context.data.members.push(user._id);
+		// Note: only push if the id does not already exist
+		if (context.data.members.indexOf(user._id) === -1) context.data.members.push(user._id);
 
 		return context;
+	};
+};
+
+const addRoomToUserObject = () => {
+	return async (context) => {
+		// Get the logged in user, `app`, `params` and `results` from the hook context
+		const { app, params, result } = context;
+		const { user } = params;
+
+		// Push room to rooms array in user object (in database)
+		//   ($addToSet prevents adding duplicate roomId if one already exists)
+		await app.service('users').patch(user._id, { $addToSet: { rooms: result._id } }, params);
 	};
 };
 
@@ -47,14 +60,45 @@ const removeSensitiveData = () => {
 	};
 };
 
+const cascadeDelete = () => {
+	return async (context) => {
+		const { app, params, id } = context;
+		// When deleting a room, we also need to delete its references in users.rooms and messages.inRoom
+		await Promise.all([
+			app.service('users').patch(
+				null,
+				{
+					$pull: {
+						rooms: id,
+					},
+				},
+				{
+					query: {
+						rooms: {
+							_id: id,
+						},
+					},
+				}
+			),
+
+			app.service('messages').remove(null, {
+				query: {
+					inRoom: id,
+				},
+				...params,
+			}),
+		]);
+	};
+};
+
 module.exports = {
 	before: {
-		all: [ authenticate('jwt'), populateField({ fields: [ 'members', 'messages' ] }) ],
-		find: [],
-		get: [],
+		all: [ authenticate('jwt') ],
+		find: [ populateField({ fields: [ 'members', 'messages' ] }) ],
+		get: [ populateField({ fields: [ 'members', 'messages' ] }) ],
 		create: [ setTimestamp('createdAt'), addCurrentUserToMemberList() ],
-		update: [ setTimestamp('updatedAt') ],
-		patch: [],
+		update: [ setTimestamp('updatedAt'), populateField({ fields: [ 'members', 'messages' ] }) ],
+		patch: [ populateField({ fields: [ 'members', 'messages' ] }) ],
 		remove: [],
 	},
 
@@ -62,10 +106,10 @@ module.exports = {
 		all: [ removeSensitiveData() ],
 		find: [],
 		get: [],
-		create: [],
+		create: [ addRoomToUserObject() ],
 		update: [],
 		patch: [],
-		remove: [],
+		remove: [ cascadeDelete() ],
 	},
 
 	error: {

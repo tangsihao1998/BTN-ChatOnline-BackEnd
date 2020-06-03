@@ -2,6 +2,7 @@ const swagger = require('feathers-swagger');
 
 // TODO: Configure swagger properly
 module.exports = swagger({
+	openApiVersion: 3,
 	docsPath: '/docs',
 	docsJsonPath: '/docs/json',
 	uiIndex: true,

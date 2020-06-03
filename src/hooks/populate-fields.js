@@ -6,7 +6,9 @@ module.exports = (options = { fields: [] }) => {
 	return async (context) => {
 		// Get `params` from the hook context
 		const { params } = context;
+
 		// Add selected fields to $populate query param
+		if (!params.query) params.query = {};
 		params.query.$populate = [ ...options.fields ];
 
 		return context;

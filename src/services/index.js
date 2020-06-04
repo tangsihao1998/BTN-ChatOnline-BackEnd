@@ -1,5 +1,11 @@
-const users = require('./users/users.service.js');
+const users = require('./users/users.service');
+const rooms = require('./rooms/rooms.service');
+const messages = require('./messages/messages.service');
+const authentication = require('./authentication/authentication.service');
 // eslint-disable-next-line no-unused-vars
 module.exports = function(app) {
+	app.configure(authentication);
 	app.configure(users);
+	app.configure(rooms);
+	app.configure(messages);
 };

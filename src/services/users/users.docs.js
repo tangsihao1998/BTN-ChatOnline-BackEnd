@@ -1,5 +1,5 @@
 module.exports = {
-	description: 'A service that provides an interface to interact with the `messages` model',
+	description: 'A service that provides an interface to interact with the `users` model',
 	securities: [ 'find', 'get', 'update', 'patch', 'remove' ],
 	schemas: {
 		users: {

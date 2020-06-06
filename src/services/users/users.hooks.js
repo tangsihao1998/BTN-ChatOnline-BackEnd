@@ -2,11 +2,13 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 
 const { hashPassword, protect } = require('@feathersjs/authentication-local').hooks;
 
-const populateField = require('../../hooks/populate-fields.js');
+// const populateField = require('../../hooks/populate-fields.js');
 
 module.exports = {
 	before: {
-		all: [ populateField({ fields: [ 'rooms' ] }) ],
+		all: [
+			/*populateField({ fields: [ 'rooms' ] })*/
+		],
 		find: [ authenticate('jwt') ],
 		get: [ authenticate('jwt') ],
 		create: [ hashPassword('password') ],

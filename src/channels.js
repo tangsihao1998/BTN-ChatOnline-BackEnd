@@ -1,18 +1,23 @@
+/* eslint-disable no-unused-vars */
+const logger = require('./logger');
+
 module.exports = function(app) {
 	if (typeof app.channel !== 'function') {
 		// If no real-time functionality has been configured just return
 		return;
 	}
 
-	// app.on('connection', (connection) => {
-	// 	On a new real-time connection, add it to the anonymous channel
-	// 	app.channel('anonymous').join(connection);
-	// });
+	app.on('connection', (connection) => {
+		logger.info('A new real-time connection has been made');
+		// On a new real-time connection, add it to the anonymous channel
+		// app.channel('anonymous').join(connection);
+	});
 
 	app.on('login', (authResult, { connection }) => {
 		// connection can be undefined if there is no
 		// real-time connection, e.g. when logging in via REST
 		if (connection) {
+			logger.info('A user has logged in');
 			// Obtain the logged in user from the connection
 			// const user = connection.user;
 
@@ -42,6 +47,10 @@ module.exports = function(app) {
 			// app.channel(`emails/${user.email}`).join(channel);
 			// app.channel(`userIds/$(user.id}`).join(channel);
 		}
+	});
+
+	app.on('logout', (payload, { connection }) => {
+		logger.info('A user has logged out');
 	});
 
 	// eslint-disable-next-line no-unused-vars

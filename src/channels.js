@@ -71,7 +71,13 @@ module.exports = function(app) {
 	// app.service('users').publish('created', () => app.channel('admins'));
 
 	// With the userid and email organization from above you can easily select involved users
-	app.service('messages').publish((data) => {
+	// TODO: test::do services always emit events with 'data' as a single object? (could be array of objects)
+	app.service('rooms').publish((data, context) => {
+		const channelId = `rooms/${data._id}`;
+		return app.channel(channelId);
+	});
+
+	app.service('messages').publish((data, context) => {
 		const channelId = `rooms/${data.inRoom}`;
 		return app.channel(channelId);
 	});

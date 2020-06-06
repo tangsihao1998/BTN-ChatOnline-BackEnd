@@ -4,10 +4,10 @@ module.exports = function(app) {
 		return;
 	}
 
-	app.on('connection', (connection) => {
-		// On a new real-time connection, add it to the anonymous channel
-		app.channel('anonymous').join(connection);
-	});
+	// app.on('connection', (connection) => {
+	// 	On a new real-time connection, add it to the anonymous channel
+	// 	app.channel('anonymous').join(connection);
+	// });
 
 	app.on('login', (authResult, { connection }) => {
 		// connection can be undefined if there is no
@@ -17,10 +17,18 @@ module.exports = function(app) {
 			// const user = connection.user;
 
 			// The connection is no longer anonymous, remove it
-			app.channel('anonymous').leave(connection);
+			// app.channel('anonymous').leave(connection);
 
 			// Add it to the authenticated user channel
-			app.channel('authenticated').join(connection);
+			// app.channel('authenticated').join(connection);
+
+			// Get the list of rooms that user is currently in
+			const { user } = connection;
+			const { rooms } = user;
+			rooms.forEach((room) => {
+				const channelId = `/rooms/${room._id}`;
+				app.channel(channelId).join(connection);
+			});
 
 			// Channels can be named anything and joined on any condition
 
@@ -37,27 +45,25 @@ module.exports = function(app) {
 	});
 
 	// eslint-disable-next-line no-unused-vars
-	app.publish((data, hook) => {
-		// Here you can add event publishers to channels set up in `channels.js`
-		// To publish only for a specific event use `app.publish(eventname, () => {})`
+	// app.publish((data, hook) => {
+	// 	Here you can add event publishers to channels set up in `channels.js`
+	// 	To publish only for a specific event use `app.publish(eventname, () => {})`
 
-		// console.log(
-		// 	'Publishing all events to all authenticated users. See `channels.js` and https://docs.feathersjs.com/api/channels.html for more information.'
-		// ); // eslint-disable-line
+	// 	console.log(
+	// 		'Publishing all events to all authenticated users. See `channels.js` and https://docs.feathersjs.com/api/channels.html for more information.'
+	// 	); // eslint-disable-line
 
-		// e.g. to publish all service events to all authenticated users use
-		return app.channel('authenticated');
-	});
+	// 	e.g. to publish all service events to all authenticated users use
+	// 	return app.channel('authenticated');
+	// });
 
 	// Here you can also add service specific event publishers
 	// e.g. the publish the `users` service `created` event to the `admins` channel
 	// app.service('users').publish('created', () => app.channel('admins'));
 
 	// With the userid and email organization from above you can easily select involved users
-	// app.service('messages').publish(() => {
-	//   return [
-	//     app.channel(`userIds/${data.createdBy}`),
-	//     app.channel(`emails/${data.recipientEmail}`)
-	//   ];
-	// });
+	app.service('messages').publish((data) => {
+		const channelId = `rooms/${data.inRoom}`;
+		return app.channel(channelId);
+	});
 };

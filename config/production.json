@@ -1,4 +1,5 @@
 {
 	"host": "btn-chat-online-back-end-app.feathersjs.com",
-	"port": "PORT"
+	"port": "PORT",
+	"mongodb": "MONGODB_URL"
 }

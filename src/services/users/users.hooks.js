@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { hashPassword, protect } = require('@feathersjs/authentication-local').hooks;
+const search = require('feathers-mongodb-fuzzy-search');
+
 const {
 	isVerified,
 	addVerification,
@@ -25,18 +27,16 @@ const sendVerificationEmail = () => {
 
 module.exports = {
 	before: {
-		all: [ populateField({ fields: [ 'rooms' ] }) ],
+		all: [ search([ 'name', 'email' ]), populateField({ fields: [ 'rooms' ] }) ],
 		find: [ authenticate('jwt') ],
 		get: [ authenticate('jwt') ],
-		create: [
-			hashPassword('password'),
-			addVerification(),
-		],
+		create: [ hashPassword('password'), addVerification() ],
 		update: [ commonHooks.disallow('external') ],
 		patch: [
 			commonHooks.iff(
 				commonHooks.isProvider('external'),
 				commonHooks.preventChanges(
+					true,
 					'email',
 					'isVerified',
 					'verifyToken',
@@ -47,7 +47,7 @@ module.exports = {
 					'resetShortToken',
 					'resetExpires'
 				),
-				hashPassword(),
+				hashPassword('password'),
 				authenticate('jwt')
 			),
 		],

@@ -38,23 +38,24 @@ module.exports = function(app) {
 					ref: 'rooms',
 				},
 			],
-			verification: {
-				isVerified: {
-					type: Boolean,
-					default: false,
-				},
-				verifyToken: {
-					type: String,
-				},
-				verifyExpires: {
-					type: Date,
-				},
-				resetToken: {
-					type: String,
-				},
-				resetExpires: {
-					type: Date,
-				},
+			isVerified: {
+				type: Boolean,
+				default: false,
+			},
+			verifyToken: {
+				type: String,
+			},
+			verifyExpires: {
+				type: Date,
+			},
+			verifyChanges: {
+				type: Object,
+			},
+			resetToken: {
+				type: String,
+			},
+			resetExpires: {
+				type: Date,
 			},
 		},
 		{

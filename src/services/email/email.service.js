@@ -1,19 +1,18 @@
 // Initializes the `email` service on path `/email`
-const { Email } = require('./email.class');
 const hooks = require('./email.hooks');
-
+const Mailer = require('feathers-mailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 
 module.exports = function(app) {
-	const options = smtpTransport({
+	const options = {
 		service: 'gmail',
 		auth: {
 			user: process.env.GMAIL_ACCOUNT,
 			pass: process.env.GMAIL_PASSWORD,
 		},
-	});
+	};
 
-	const emailService = new Email(options, app);
+	const emailService = new Mailer(smtpTransport(options));
 
 	// Initialize our service with any options it requires
 	app.use('/email', emailService);

@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const commonHooks = require('feathers-hooks-common');
 
 const isAction = (...args) => {
-	return async (context) => args.include(context.data.action);
+	return async (context) => args.includes(context.data.action);
 };
 
 module.exports = {

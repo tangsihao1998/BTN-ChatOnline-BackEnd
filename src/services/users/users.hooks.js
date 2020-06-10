@@ -8,6 +8,7 @@ const {
 const commonHooks = require('feathers-hooks-common');
 
 const populateField = require('../../hooks/populate-fields.js');
+const authManagementService = require('../authmanagement/authmanagement.notifier');
 
 // const preventUnverifiedChanges = () => {
 // 	return commonHooks.iff(
@@ -28,12 +29,13 @@ const populateField = require('../../hooks/populate-fields.js');
 
 const sendVerificationEmail = () => {
 	return async (context) => {
+		console.log('sending verification email');
 		const { app, params, result } = context;
 		if (!params.provider) return context;
 		const user = result;
 
 		if (process.env.GMAIL_ACCOUNT && user) {
-			app.service('auth-manager').notifier('resendVerifySignup', user);
+			authManagementService(app).notifier('resendVerifySignup', user);
 		}
 		return context;
 	};
@@ -44,7 +46,7 @@ module.exports = {
 		all: [ populateField({ fields: [ 'rooms' ] }) ],
 		find: [ authenticate('jwt') ],
 		get: [ authenticate('jwt') ],
-		create: [ hashPassword('password'), addVerification('auth-manager') ],
+		create: [ hashPassword('password'), addVerification() ],
 		update: [ hashPassword('password'), authenticate('jwt') ],
 		patch: [ hashPassword('password'), authenticate('jwt') ],
 		remove: [ authenticate('jwt') ],

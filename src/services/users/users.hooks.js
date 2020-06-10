@@ -10,26 +10,8 @@ const commonHooks = require('feathers-hooks-common');
 const populateField = require('../../hooks/populate-fields.js');
 const authManagementService = require('../authmanagement/authmanagement.notifier');
 
-// const preventUnverifiedChanges = () => {
-// 	return commonHooks.iff(
-// 		commonHooks.isProvider('external'),
-// 		commonHooks.preventChanges(
-// 			'email',
-// 			'isVerified',
-// 			'verifyToken',
-// 			'verifyShortToken',
-// 			'verifyExpires',
-// 			'verifyChanges',
-// 			'resetToken',
-// 			'resetShortToken',
-// 			'resetExpires'
-// 		)
-// 	);
-// };
-
 const sendVerificationEmail = () => {
 	return async (context) => {
-		console.log('sending verification email');
 		const { app, params, result } = context;
 		if (!params.provider) return context;
 		const user = result;
@@ -46,9 +28,29 @@ module.exports = {
 		all: [ populateField({ fields: [ 'rooms' ] }) ],
 		find: [ authenticate('jwt') ],
 		get: [ authenticate('jwt') ],
-		create: [ hashPassword('password'), addVerification() ],
-		update: [ hashPassword('password'), authenticate('jwt') ],
-		patch: [ hashPassword('password'), authenticate('jwt') ],
+		create: [
+			hashPassword('password'),
+			addVerification(),
+		],
+		update: [ commonHooks.disallow('external') ],
+		patch: [
+			commonHooks.iff(
+				commonHooks.isProvider('external'),
+				commonHooks.preventChanges(
+					'email',
+					'isVerified',
+					'verifyToken',
+					'verifyShortToken',
+					'verifyExpires',
+					'verifyChanges',
+					'resetToken',
+					'resetShortToken',
+					'resetExpires'
+				),
+				hashPassword(),
+				authenticate('jwt')
+			),
+		],
 		remove: [ authenticate('jwt') ],
 	},
 
@@ -61,8 +63,8 @@ module.exports = {
 		find: [],
 		get: [],
 		create: [ sendVerificationEmail(), removeVerification() ],
-		update: [ commonHooks.disallow('external') ],
-		patch: [ isVerified /*preventUnverifiedChanges()*/ ],
+		update: [],
+		patch: [],
 		remove: [],
 	},
 

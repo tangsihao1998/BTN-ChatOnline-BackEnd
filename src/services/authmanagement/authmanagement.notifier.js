@@ -33,7 +33,7 @@ module.exports = (app) => {
 			switch (action) {
 				// TODO: add more cases
 				case 'resendVerifySignup': // Send verification link after register
-					verificationUrl = createVerificationUrl('verifySignup', user.verifyToken);
+					verificationUrl = createVerificationUrl('verifySignupLong', user.verifyToken);
 					email.subject = 'Verify your registration';
 					email.html = jade.compileFile(templatePath)({
 						user: user.name || user.email,
@@ -49,7 +49,11 @@ module.exports = (app) => {
 					});
 					return sendEmail(email);
 				case 'sendResetPwd': // Received a request to reset password
-					verificationUrl = createVerificationUrl('resetPwd', user.resetToken, 'authentication/');
+					verificationUrl = createVerificationUrl(
+						'resetPwdLong',
+						user.resetToken,
+						'authentication/'
+					);
 					email.subject = 'Password reset';
 					email.html = jade.compileFile(templatePath)({
 						user: user.name || user.email,

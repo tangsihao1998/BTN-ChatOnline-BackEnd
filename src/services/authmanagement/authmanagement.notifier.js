@@ -4,9 +4,9 @@ const path = require('path');
 module.exports = (app) => {
 	const templatePath = path.join(__dirname, 'email-template.jade');
 
-	const createVerificationUrl = (action, token) => {
+	const createVerificationUrl = (action, token, path = '') => {
 		const baseUrl = process.env.FRONTEND_BASE_URL;
-		return `${baseUrl}/${action}?token=${token}`;
+		return `${baseUrl}/${path}${action}?token=${token}`;
 	};
 
 	const sendEmail = async (email) => {
@@ -33,7 +33,7 @@ module.exports = (app) => {
 			switch (action) {
 				// TODO: add more cases
 				case 'resendVerifySignup': // Send verification link after register
-					verificationUrl = createVerificationUrl(action, user.verifyToken);
+					verificationUrl = createVerificationUrl('verifySignup', user.verifyToken);
 					email.subject = 'Verify your registration';
 					email.html = jade.compileFile(templatePath)({
 						user: user.name || user.email,
@@ -41,15 +41,15 @@ module.exports = (app) => {
 					});
 					return sendEmail(email);
 				case 'verifySignup': // Verified successfully. Send confirmation email.
-					verificationUrl = createVerificationUrl('verify', user.verifyToken);
+					// verificationUrl = createVerificationUrl('verify', user.verifyToken);
 					email.subject = 'Registration successfully verified';
 					email.html = jade.compileFile(templatePath)({
 						user: user.name || user.email,
-						message: 'Your account is successfully verified.'
+						message: 'Your account is successfully verified.',
 					});
 					return sendEmail(email);
 				case 'sendResetPwd': // Received a request to reset password
-					verificationUrl = createVerificationUrl(action, user.resetToken);
+					verificationUrl = createVerificationUrl('resetPwd', user.resetToken, 'authentication/');
 					email.subject = 'Password reset';
 					email.html = jade.compileFile(templatePath)({
 						user: user.name || user.email,
@@ -57,7 +57,7 @@ module.exports = (app) => {
 					});
 					return sendEmail(email);
 				case 'resetPwd': // Password successfully resetted. Send confirmation email
-					email.subject = 'Your password has been resetted',
+					email.subject = 'Your password has been resetted';
 					email.html = jade.compileFile(templatePath)({
 						user: user.name || user.email,
 						message: 'Your password has been successfully resetted.',

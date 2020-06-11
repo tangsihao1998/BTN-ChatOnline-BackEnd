@@ -18,7 +18,9 @@ const addCurrentUserToMemberList = () => {
 		//   then push current user's id into it.
 		if (!context.data.members) context.data.members = [];
 		// Note: only push if the id does not already exist
-		if (context.data.members.indexOf(user._id) === -1) context.data.members.push(user._id);
+		if (context.data.members.indexOf(user._id.toString()) === -1) {
+			context.data.members.push(user._id);
+		}
 
 		return context;
 	};

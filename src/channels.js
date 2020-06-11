@@ -33,6 +33,7 @@ module.exports = function(app) {
 			rooms.forEach((room) => {
 				const channelId = `/rooms/${room._id}`;
 				app.channel(channelId).join(connection);
+				console.log(`User joined channel ${channelId}`);
 			});
 
 			// Channels can be named anything and joined on any condition
@@ -73,12 +74,13 @@ module.exports = function(app) {
 	// With the userid and email organization from above you can easily select involved users
 	// TODO: test::do services always emit events with 'data' as a single object? (could be array of objects)
 	app.service('rooms').publish((data, context) => {
-		const channelId = `rooms/${data._id}`;
+		const channelId = `/rooms/${data._id}`;
 		return app.channel(channelId);
 	});
 
 	app.service('messages').publish((data, context) => {
-		const channelId = `rooms/${data.inRoom}`;
+		const channelId = `/rooms/${data.inRoom}`;
+		console.log(`Publishing to ${channelId}`);
 		return app.channel(channelId);
 	});
 };

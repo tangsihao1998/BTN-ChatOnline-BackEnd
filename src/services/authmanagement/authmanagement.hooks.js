@@ -7,7 +7,7 @@ const isAction = (...args) => {
 
 module.exports = {
 	before: {
-		all: [ authenticate('jwt') ],
+		all: [],
 		find: [],
 		get: [],
 		create: [ commonHooks.iff(isAction('passwordChange', 'identityChange'), authenticate('jwt')) ],

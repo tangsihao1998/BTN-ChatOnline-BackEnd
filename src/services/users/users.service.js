@@ -9,6 +9,7 @@ module.exports = function(app) {
 		Model: createModel(app),
 		paginate: app.get('paginate'),
 		multi: [ 'patch' ],
+		whitelist: [ '$text', '$regex', '$search' ],
 	};
 
 	// Initialize our service with any options it requires

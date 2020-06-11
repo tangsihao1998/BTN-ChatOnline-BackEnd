@@ -38,6 +38,31 @@ module.exports = function(app) {
 					ref: 'rooms',
 				},
 			],
+			friends: [
+				{
+					type: Schema.Types.ObjectId,
+					ref: 'users',
+				},
+			],
+			isVerified: {
+				type: Boolean,
+				default: false,
+			},
+			verifyToken: {
+				type: String,
+			},
+			verifyExpires: {
+				type: Date,
+			},
+			verifyChanges: {
+				type: Object,
+			},
+			resetToken: {
+				type: String,
+			},
+			resetExpires: {
+				type: Date,
+			},
 		},
 		{
 			timestamps: true,

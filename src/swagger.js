@@ -13,4 +13,7 @@ module.exports = swagger({
 			version: '1.0.0',
 		},
 	},
+	ignore: {
+		paths: [ 'email' ],
+	},
 });

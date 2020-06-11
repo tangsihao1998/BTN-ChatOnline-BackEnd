@@ -91,6 +91,32 @@ const cascadeDelete = () => {
 	};
 };
 
+const removeCircularFields = () => {
+	return async (context) => {
+		const { method, result } = context;
+
+		if (!result) return context;
+
+		const _removeCircularFields = (room) => {
+			if (room.members) {
+				room.members.forEach((member) => {
+					delete member.rooms;
+				});
+			}
+
+			return room;
+		};
+
+		if (method === 'find') {
+			// Map all data to remove circular JSON formations
+			context.result.data = result.data.map(_removeCircularFields);
+		} else {
+			// Otherwise just update the single result
+			context.result = _removeCircularFields(result);
+		}
+	};
+};
+
 module.exports = {
 	before: {
 		all: [ authenticate('jwt') ],
@@ -103,7 +129,7 @@ module.exports = {
 	},
 
 	after: {
-		all: [ removeSensitiveData() ],
+		all: [ removeSensitiveData(), removeCircularFields() ],
 		find: [],
 		get: [],
 		create: [ addRoomToUserObject() ],

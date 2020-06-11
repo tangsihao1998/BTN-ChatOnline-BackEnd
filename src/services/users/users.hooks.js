@@ -25,6 +25,39 @@ const sendVerificationEmail = () => {
 	};
 };
 
+const removeCircularFields = () => {
+	return async (context) => {
+		const { method, result } = context;
+
+		if (!result) return context;
+
+		const _removeCircularFields = (user) => {
+			if (user.friends) {
+				user.friends.forEach((friend) => {
+					delete friend.friends;
+				});
+			}
+
+			if (user.rooms) {
+				user.rooms.forEach((room) => {
+					delete room.members;
+					delete room.messages;
+				});
+
+				return user;
+			}
+		};
+
+		if (method === 'find') {
+			// Map all data to remove circular JSON formations
+			context.result.data = result.data.map(_removeCircularFields);
+		} else {
+			// Otherwise just update the single result
+			context.result = _removeCircularFields(result);
+		}
+	};
+};
+
 module.exports = {
 	before: {
 		all: [ search({ fields: [ 'name', 'email' ] }), populateField({ fields: [ 'rooms' ] }) ],
@@ -59,6 +92,7 @@ module.exports = {
 			// Make sure the password field is never sent to the client
 			// Always must be the last hook
 			protect('password'),
+			removeCircularFields(),
 		],
 		find: [],
 		get: [],

@@ -27,7 +27,7 @@ const sendVerificationEmail = () => {
 
 module.exports = {
 	before: {
-		all: [ search([ 'name', 'email' ]), populateField({ fields: [ 'rooms' ] }) ],
+		all: [ search({ fields: [ 'name', 'email' ] }), populateField({ fields: [ 'rooms' ] }) ],
 		find: [ authenticate('jwt') ],
 		get: [ authenticate('jwt') ],
 		create: [ hashPassword('password'), addVerification() ],
